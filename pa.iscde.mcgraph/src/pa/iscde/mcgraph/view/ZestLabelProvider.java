@@ -9,7 +9,7 @@ import org.eclipse.zest.core.viewers.IFigureProvider;
 
 import pa.iscde.mcgraph.model.MethodRep;
 
-public class ZestLabelProvider extends LabelProvider implements IFigureProvider {
+class ZestLabelProvider extends LabelProvider implements IFigureProvider {
 
 	@Override
 	public String getText(Object obj) {

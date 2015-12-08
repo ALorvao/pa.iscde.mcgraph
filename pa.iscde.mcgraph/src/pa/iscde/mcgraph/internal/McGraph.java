@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import pa.iscde.mcgraph.model.MethodRep;
+import pa.iscde.mcgraph.service.McGraphServices;
 import pa.iscde.mcgraph.view.McGraphView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.model.ClassElement;
@@ -23,9 +24,8 @@ public class McGraph {
 	private JavaEditorServices editorService;
 	private ProjectBrowserServices browserService;
 	private PackageElement root;
-
 	private ArrayList<MethodRep> metodos;
-	private McGraphView view;
+	private McGraphServices mcGraphServices;
 
 	public McGraph() {
 		this.activator = Activator.getActivator();
@@ -33,7 +33,7 @@ public class McGraph {
 		this.browserService = activator.getBrowserService();
 		this.root = browserService.getRootPackage();
 		this.metodos = new ArrayList<>();
-		this.view = McGraphView.getInstance();
+		this.mcGraphServices = activator.startService(McGraphView.getInstance());
 		getContent();
 
 	}
@@ -122,17 +122,24 @@ public class McGraph {
 		return metodos;
 	}
 
-	
 	public JavaEditorServices getEditorService() {
 		return editorService;
 	}
-	
+
 	public ProjectBrowserServices getBrowserService() {
 		return browserService;
 	}
 
 	public void refresh() {
 		getContent();
+	}
+
+	public void notifyDoubleClick(MethodRep rep) {
+		activator.notityDoubleClik(rep);
+	}
+
+	public void notifySelectionChanged(MethodRep rep) {
+		activator.notifySelectionChanged(rep);
 	}
 
 }
