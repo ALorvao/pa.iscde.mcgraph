@@ -27,9 +27,7 @@ import org.eclipse.zest.layouts.LayoutAlgorithm;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.HorizontalTreeLayoutAlgorithm;
 
-import pa.iscde.mcgraph.internal.Activator;
 import pa.iscde.mcgraph.internal.McGraph;
-import pa.iscde.mcgraph.internal.Teste;
 import pa.iscde.mcgraph.model.MethodRep;
 import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
@@ -86,7 +84,6 @@ public class McGraphView implements PidescoView {
 				mcGraph.refresh();
 				viewer.refresh();
 				viewer.applyLayout();
-				new Teste();
 			}
 
 			@Override
@@ -124,25 +121,23 @@ public class McGraphView implements PidescoView {
 				viewer.refresh();
 				viewer.applyLayout();
 
-				// IExtensionRegistry extRegistry =
-				// Platform.getExtensionRegistry();
-				// IExtensionPoint extensionPoint =
-				// extRegistry.getExtensionPoint("pa.iscde.mcgraph.mcfilter");
-				// IExtension[] extensions = extensionPoint.getExtensions();
-				// for(IExtension e : extensions) {
-				// IConfigurationElement[] confElements =
-				// e.getConfigurationElements();
-				// for(IConfigurationElement c : confElements) {
-				// String s = c.getAttribute("name");
-				// try {
-				// Object o = c.createExecutableExtension("class");
-				// System.out.println("ei");
-				// } catch (CoreException e1) {
-				// // TODO Auto-generated catch block
-				// e1.printStackTrace();
-				// }
-				// }
-				// }
+				IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
+				IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.mcgraph.mcfilter");
+				IExtension[] extensions = extensionPoint.getExtensions();
+				for (IExtension e : extensions) {
+					IConfigurationElement[] confElements = e.getConfigurationElements();
+					for (IConfigurationElement c : confElements) {
+						String s = c.getAttribute("name");
+						System.out.println("Está ligado: " + s);
+						try {
+							Object o = c.createExecutableExtension("class");
+							System.out.println("o");
+						} catch (CoreException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}
 			}
 		});
 	}
@@ -160,7 +155,7 @@ public class McGraphView implements PidescoView {
 						mcGraph.notifySelectionChanged(rep);
 					}
 				}
-				unhighlightAll();
+				// unhighlightAll();
 
 			}
 		});
@@ -188,6 +183,21 @@ public class McGraphView implements PidescoView {
 			}
 		}
 		return l;
+	}
+
+	// Equals não vai ser suficiente
+	public void highLight(MethodRep rep) {
+		for (Object obj : viewer.getNodeElements()) {
+			if (obj instanceof MethodRep) {
+				MethodRep node = (MethodRep) obj;
+				System.out.println("Cheguei");
+				if (node.equals(rep)) {
+					System.out.println(rep);
+					GraphItem graphItem = viewer.findGraphItem(rep);
+					graphItem.highlight();
+				}
+			}
+		}
 	}
 
 	public static McGraphView getInstance() {

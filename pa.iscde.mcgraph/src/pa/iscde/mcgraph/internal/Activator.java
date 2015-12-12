@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Assert;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 import pa.iscde.mcgraph.model.MethodRep;
 import pa.iscde.mcgraph.service.McGraphListener;
@@ -23,8 +24,9 @@ public class Activator implements BundleActivator {
 	private JavaEditorServices editorService;
 	private ProjectBrowserServices browserService;
 	private McGraphServices services;
-	public static Activator activator;
+	private static Activator activator;
 	private Set<McGraphListener> mcGraphListeners;
+	private ServiceRegistration<McGraphServices> registerService;
 
 	
 	//Activator
@@ -41,6 +43,8 @@ public class Activator implements BundleActivator {
 		ServiceReference<ProjectBrowserServices> pref = context.getServiceReference(ProjectBrowserServices.class);
 		browserService = context.getService(pref);
 		mcGraphListeners = new HashSet<McGraphListener>();
+		services = new McGraphServicesImpl();
+		registerService = bundleContext.registerService(McGraphServices.class, services, null);
 		activator = this;
 	
 	}
@@ -52,6 +56,8 @@ public class Activator implements BundleActivator {
 	
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
+		registerService.unregister();
+		mcGraphListeners.clear();
 	}
 	
 
@@ -102,8 +108,5 @@ public class Activator implements BundleActivator {
 		return services;
 	}
 
-	public McGraphServices startService(McGraphView instance) {
-		services = new McGraphServicesImpl(McGraphView.getInstance());
-		return services;
-	}
+	
 }

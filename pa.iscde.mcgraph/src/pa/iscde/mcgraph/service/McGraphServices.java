@@ -13,6 +13,8 @@ public interface McGraphServices {
 	
 		
 		List<MethodRep> getHighLighted();
+		
+		void highLight(MethodRep rep);
 
 		void addListener(McGraphListener listener);
 		

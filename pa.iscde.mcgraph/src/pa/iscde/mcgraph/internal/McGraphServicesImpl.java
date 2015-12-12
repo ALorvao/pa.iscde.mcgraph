@@ -11,15 +11,19 @@ import pa.iscde.mcgraph.view.McGraphView;
 
 public class McGraphServicesImpl implements McGraphServices {
 
-	private McGraphView view;
 
-	public McGraphServicesImpl(McGraphView view) {
-		this.view = view;
+	public McGraphServicesImpl() {
+		
 	}
 
 	@Override
 	public List<MethodRep> getHighLighted() {
-		return view.getHighLighted();
+		return McGraphView.getInstance().getHighLighted();
+	}
+	
+	@Override
+	public void highLight(MethodRep rep) {
+		McGraphView.getInstance().highLight(rep);		
 	}
 
 	@Override
@@ -31,5 +35,7 @@ public class McGraphServicesImpl implements McGraphServices {
 	public void removeListener(McGraphListener listener) {
 		Activator.getActivator().removeListener(listener);
 	}
+
+	
 
 }

@@ -33,7 +33,7 @@ public class McGraph {
 		this.browserService = activator.getBrowserService();
 		this.root = browserService.getRootPackage();
 		this.metodos = new ArrayList<>();
-		this.mcGraphServices = activator.startService(McGraphView.getInstance());
+		this.mcGraphServices = activator.getMcGraphService();
 		getContent();
 
 	}
