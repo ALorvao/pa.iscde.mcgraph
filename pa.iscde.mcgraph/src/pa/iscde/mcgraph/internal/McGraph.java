@@ -89,10 +89,11 @@ public class McGraph {
 				public boolean visit(MethodInvocation node) {
 
 					IMethodBinding resolveMethodBinding = node.resolveMethodBinding();
-					if (node.getExpression() != null) {
+					if (resolveMethodBinding != null && node.getExpression() != null) {
 						ITypeBinding resolveTypeBinding = node.getExpression().resolveTypeBinding();
 						for (MethodRep dep : metodos) {
-							if (dep.getClassElement().getName().equals(resolveTypeBinding.getName() + ".java")) {
+							if (resolveTypeBinding != null
+									&& dep.getClassElement().getName().equals(resolveTypeBinding.getName() + ".java")) {
 								if (resolveMethodBinding.toString()
 										.equals(dep.getMethodDeclaration().resolveBinding().toString())) {
 									if (!rep.getDependencies().contains(dep)) {
@@ -103,8 +104,10 @@ public class McGraph {
 						}
 					} else
 						for (MethodRep dep : metodos) {
-							if (resolveMethodBinding.toString()
-									.equals(dep.getMethodDeclaration().resolveBinding().toString())) {
+
+							if (resolveMethodBinding != null && dep.getMethodDeclaration().resolveBinding() != null
+									&& resolveMethodBinding.toString()
+											.equals(dep.getMethodDeclaration().resolveBinding().toString())) {
 								if (!rep.getDependencies().contains(dep)) {
 									rep.addDependencie(dep);
 								}

@@ -9,8 +9,6 @@ import pa.iscde.mcgraph.model.MethodRep;
  */
 
 public interface McGraphServices {
-	
-	
 		
 		List<MethodRep> getHighLighted();
 		

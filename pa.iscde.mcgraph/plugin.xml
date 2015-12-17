@@ -3,13 +3,23 @@
 <plugin>
    <extension-point id="mcfilter" name="McGraph Filter" schema="schema/mcfilter.exsd"/>
    <extension
-         id="id1"
+         id="mcgraphview"
          name="MCGraph"
          point="pt.iscte.pidesco.view">
       <view
             class="pa.iscde.mcgraph.view.McGraphView"
             icon="mcg.png">
       </view>
+   </extension>
+   <extension
+         id="id1"
+         name="name"
+         point="pt.iscte.pidesco.tool">
+      <tool
+            class="pa.iscde.mcgraph.internal.PidescoTool"
+            hasState="false"
+            view="pa.iscde.mcgraph.mcgraphview">
+      </tool>
    </extension>
 
 </plugin>

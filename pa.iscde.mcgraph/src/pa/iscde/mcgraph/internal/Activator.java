@@ -46,6 +46,7 @@ public class Activator implements BundleActivator {
 		services = new McGraphServicesImpl();
 		registerService = bundleContext.registerService(McGraphServices.class, services, null);
 		activator = this;
+		
 	
 	}
 	

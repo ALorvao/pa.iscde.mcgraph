@@ -1,7 +1,9 @@
+
 package pa.iscde.mcgraph.view;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,14 +13,20 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Decorations;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.zest.core.viewers.GraphViewer;
 import org.eclipse.zest.core.widgets.GraphItem;
 import org.eclipse.zest.core.widgets.GraphNode;
@@ -29,8 +37,10 @@ import org.eclipse.zest.layouts.algorithms.HorizontalTreeLayoutAlgorithm;
 
 import pa.iscde.mcgraph.internal.McGraph;
 import pa.iscde.mcgraph.model.MethodRep;
+import pa.iscde.mcgraph.service.McGraphFilter;
 import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
+import pt.iscte.pidesco.projectbrowser.model.ClassElement;
 
 public class McGraphView implements PidescoView {
 
@@ -38,6 +48,8 @@ public class McGraphView implements PidescoView {
 
 	private McGraph mcGraph;
 	private GraphViewer viewer;
+
+	private HashMap<String, McGraphFilter> filters;
 
 	public McGraphView() {
 		this.instance = this;
@@ -59,6 +71,70 @@ public class McGraphView implements PidescoView {
 		addDoubleClickListener();
 		addSelectionChangedListener();
 		addEditorListeners();
+
+		filters = new HashMap<String, McGraphFilter>();
+		filters.put("NoFilter", new McGraphFilter() {
+
+			@Override
+			public boolean acceptDependencies(ClassElement c, MethodDeclaration md) {
+				return true;
+			}
+
+			@Override
+			public boolean accept(ClassElement c, MethodDeclaration md) {
+				return true;
+			}
+		});
+		IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.mcgraph.mcfilter");
+		IExtension[] extensions = extensionPoint.getExtensions();
+		for (IExtension e : extensions) {
+			IConfigurationElement[] confElements = e.getConfigurationElements();
+			for (IConfigurationElement c : confElements) {
+				String s = c.getAttribute("name");
+				System.out.println("Está ligado: " + s);
+				try {
+					Object o = c.createExecutableExtension("class");
+					McGraphFilter filter = (McGraphFilter) o;
+					filters.put(s, filter);
+				} catch (CoreException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+
+
+	}
+
+	private void applyFilter(McGraphFilter filter) {
+		for (Object obj : viewer.getNodeElements()) {
+			if (obj instanceof MethodRep) {
+				MethodRep rep = (MethodRep) obj;
+				GraphItem graphItem = viewer.findGraphItem(rep);
+				graphItem.setVisible(false);
+				;
+			}
+		}
+		for (Object obj : viewer.getNodeElements()) {
+			if (obj instanceof MethodRep) {
+				MethodRep rep = (MethodRep) obj;
+				if (filter.accept(rep.getClassElement(), rep.getMethodDeclaration())) {
+					GraphItem graphItem = viewer.findGraphItem(rep);
+					System.out.println("Está visivel: " + rep);
+					graphItem.setVisible(true);
+					ArrayList<MethodRep> dependencies = rep.getDependencies();
+					for (MethodRep dep : dependencies) {
+						if (filter.acceptDependencies(dep.getClassElement(), dep.getMethodDeclaration())) {
+							GraphItem gi = viewer.findGraphItem(dep);
+							gi.setVisible(true);
+						}
+					}
+				}
+
+			}
+		}
+		viewer.applyLayout();
 	}
 
 	private void addEditorListeners() {
@@ -109,6 +185,12 @@ public class McGraphView implements PidescoView {
 
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
+
+				if (viewer != null)
+					for (Object obj : viewer.getNodeElements()) {
+						GraphItem graphItem = viewer.findGraphItem(obj);
+						graphItem.setVisible(true);
+					}
 				ISelection selection = event.getSelection();
 				if (!selection.isEmpty()) {
 					viewer.setSelection(selection);
@@ -121,23 +203,6 @@ public class McGraphView implements PidescoView {
 				viewer.refresh();
 				viewer.applyLayout();
 
-				IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
-				IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.mcgraph.mcfilter");
-				IExtension[] extensions = extensionPoint.getExtensions();
-				for (IExtension e : extensions) {
-					IConfigurationElement[] confElements = e.getConfigurationElements();
-					for (IConfigurationElement c : confElements) {
-						String s = c.getAttribute("name");
-						System.out.println("Está ligado: " + s);
-						try {
-							Object o = c.createExecutableExtension("class");
-							System.out.println("o");
-						} catch (CoreException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-				}
 			}
 		});
 	}
@@ -190,9 +255,7 @@ public class McGraphView implements PidescoView {
 		for (Object obj : viewer.getNodeElements()) {
 			if (obj instanceof MethodRep) {
 				MethodRep node = (MethodRep) obj;
-				System.out.println("Cheguei");
 				if (node.equals(rep)) {
-					System.out.println(rep);
 					GraphItem graphItem = viewer.findGraphItem(rep);
 					graphItem.highlight();
 				}
