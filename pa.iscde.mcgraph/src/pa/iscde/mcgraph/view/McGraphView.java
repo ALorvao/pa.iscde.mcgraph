@@ -37,6 +37,7 @@ import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.HorizontalTreeLayoutAlgorithm;
 
 import pa.iscde.mcgraph.internal.McGraph;
+import pa.iscde.mcgraph.internal.PidescoTool;
 import pa.iscde.mcgraph.model.MethodRep;
 import pa.iscde.mcgraph.service.McGraphFilter;
 import pt.iscte.pidesco.extensibility.PidescoView;
@@ -201,16 +202,19 @@ public class McGraphView implements PidescoView {
 	}
 
 	public void activateFilter(String filterID) {
-		activated.add(filterID);
+		if (filters.keySet().contains(filterID))
+			activated.add(filterID);
 		applyFilters();
 	}
 
 	public void deactivateFilter(String filterID) {
-		activated.remove(filterID);
+		if (filters.keySet().contains(filterID))
+			activated.remove(filterID);
 		applyFilters();
 	}
 
 	private void applyFilters() {
+		mcGraph.setToolChecked(activated);
 		for (Object obj : viewer.getNodeElements()) {
 			if (obj instanceof MethodRep) {
 				MethodRep rep = (MethodRep) obj;
@@ -265,8 +269,7 @@ public class McGraphView implements PidescoView {
 		return true;
 	}
 
-	
-	//Falta testar
+	// Falta testar
 	public void highLight(ClassElement c, MethodDeclaration dec) {
 		for (Object obj : viewer.getNodeElements()) {
 			if (obj instanceof MethodRep) {
@@ -280,7 +283,7 @@ public class McGraphView implements PidescoView {
 				}
 			}
 		}
-		
+
 	}
 
 }

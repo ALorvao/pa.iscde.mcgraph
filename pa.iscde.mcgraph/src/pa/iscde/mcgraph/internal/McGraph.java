@@ -208,4 +208,8 @@ public class McGraph {
 		return filters;
 	}
 
+	public void setToolChecked(ArrayList<String> activated) {
+		PidescoTool.getInstance().setChecked(activated);
+	}
+
 }

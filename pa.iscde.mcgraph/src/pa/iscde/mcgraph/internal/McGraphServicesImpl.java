@@ -25,7 +25,7 @@ public class McGraphServicesImpl implements McGraphServices {
 	}
 	
 	@Override
-	public void highLight(ClassElement c, MethodDeclaration dec) {
+	public void highLight(ClassElement c, MethodDeclaration dec){
 		McGraphView.getInstance().highLight(c, dec);
 	}
 	
@@ -42,6 +42,7 @@ public class McGraphServicesImpl implements McGraphServices {
 
 	@Override
 	public void activateFilter(String filterId) {
+		System.out.println("Vou activar " + filterId);
 		McGraphView.getInstance().activateFilter(filterId);
 	}
 

@@ -1,5 +1,6 @@
 package pa.iscde.mcgraph.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -17,19 +18,22 @@ import pa.iscde.mcgraph.view.McGraphView;
 
 public class PidescoTool implements pt.iscte.pidesco.extensibility.PidescoTool {
 
-	public PidescoTool() {
+	private static PidescoTool tool;
+	private HashMap<TableItem, String> tableitems;
 
+	public PidescoTool() {
+		tool = this;
 	}
 
 	@Override
 	public void run(boolean activate) {
 		McGraphView view = McGraphView.getInstance();
 		Set<String> filters = view.getFilters();
-		HashMap<TableItem, String> tableitems = new HashMap<>();
+		tableitems = new HashMap<>();
 		Display display = Display.getCurrent();
 		System.out.println(display.getShells().length);
 		Shell shell = new Shell(display);
-	
+
 		Table table = new Table(shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		table.addSelectionListener(new SelectionListener() {
 
@@ -61,9 +65,9 @@ public class PidescoTool implements pt.iscte.pidesco.extensibility.PidescoTool {
 			}
 			tableitems.put(item, name);
 		}
-		table.setSize(200, 50*filters.size());
-		shell.setSize(200, 50*filters.size());
-		
+		table.setSize(200, 50 * filters.size());
+		shell.setSize(200, 50 * filters.size());
+
 		shell.open();
 		shell.addDisposeListener(new DisposeListener() {
 
@@ -73,4 +77,20 @@ public class PidescoTool implements pt.iscte.pidesco.extensibility.PidescoTool {
 			}
 		});
 	}
+
+	public void setChecked(ArrayList<String> activated) {
+		if(tableitems!=null)
+		for (String s : activated) {
+			for (TableItem item : tableitems.keySet()) {
+				if(tableitems.get(item).equals(s)){
+					item.setChecked(true);
+				}
+			}
+		}
+	}
+
+	protected static PidescoTool getInstance() {
+		return tool;
+	}
+
 }
