@@ -133,7 +133,7 @@ public class McGraphView implements PidescoView {
 					if (viewer.getStructuredSelection().getFirstElement() instanceof MethodRep) {
 						MethodRep rep = (MethodRep) viewer.getStructuredSelection().getFirstElement();
 						mcGraph.getEditorService().openFile(rep.getClassElement().getFile());
-						mcGraph.notifyDoubleClick(rep);
+						mcGraph.notifyDoubleClick(rep.getClassElement(), rep.getMethodDeclaration());
 					}
 				}
 				viewer.applyLayout();
@@ -152,7 +152,7 @@ public class McGraphView implements PidescoView {
 					viewer.setSelection(selection);
 					if (viewer.getStructuredSelection().getFirstElement() instanceof MethodRep) {
 						MethodRep rep = (MethodRep) viewer.getStructuredSelection().getFirstElement();
-						mcGraph.notifySelectionChanged(rep);
+						mcGraph.notifySelectionChanged(rep.getClassElement(), rep.getMethodDeclaration());
 					}
 				}
 			}
@@ -181,19 +181,6 @@ public class McGraphView implements PidescoView {
 			}
 		}
 		return l;
-	}
-
-	// Equals não vai ser suficiente
-	public void highLight(MethodRep rep) {
-		for (Object obj : viewer.getNodeElements()) {
-			if (obj instanceof MethodRep) {
-				MethodRep node = (MethodRep) obj;
-				if (node.equals(rep)) {
-					GraphItem graphItem = viewer.findGraphItem(rep);
-					graphItem.highlight();
-				}
-			}
-		}
 	}
 
 	public static McGraphView getInstance() {
@@ -276,6 +263,24 @@ public class McGraphView implements PidescoView {
 			}
 		}
 		return true;
+	}
+
+	
+	//Falta testar
+	public void highLight(ClassElement c, MethodDeclaration dec) {
+		for (Object obj : viewer.getNodeElements()) {
+			if (obj instanceof MethodRep) {
+				MethodRep rep = (MethodRep) obj;
+				if (rep.getClassElement().equals(c)) {
+					MethodDeclaration med = rep.getMethodDeclaration();
+					if (med.getBody().toString().equals(dec.getBody().toString()) && med.getFlags() == dec.getFlags()) {
+						GraphItem graphItem = viewer.findGraphItem(rep);
+						graphItem.highlight();
+					}
+				}
+			}
+		}
+		
 	}
 
 }

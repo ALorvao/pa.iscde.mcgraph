@@ -148,12 +148,12 @@ public class McGraph {
 		getContent();
 	}
 
-	public void notifyDoubleClick(MethodRep rep) {
-		activator.notityDoubleClik(rep);
+	public void notifyDoubleClick(ClassElement c, MethodDeclaration dec) {
+		activator.notityDoubleClik(c, dec);
 	}
 
-	public void notifySelectionChanged(MethodRep rep) {
-		activator.notifySelectionChanged(rep);
+	public void notifySelectionChanged(ClassElement c, MethodDeclaration dec) {
+		activator.notifySelectionChanged(c, dec);
 	}
 
 	public HashMap<String, McGraphFilter> getFilters() {

@@ -1,6 +1,9 @@
 package pa.iscde.mcgraph.service;
 
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+
 import pa.iscde.mcgraph.model.MethodRep;
+import pt.iscte.pidesco.projectbrowser.model.ClassElement;
 
 /**
  * Represents a listener for events in the McGraph
@@ -9,29 +12,31 @@ import pa.iscde.mcgraph.model.MethodRep;
 public interface McGraphListener {
 
 	/**
-	 * DoubleClick Event Listener.
+	 * DoubleClick Event Listener
 	 */
-	void doubleClick(MethodRep rep);
+	void doubleClick(ClassElement c, MethodDeclaration dec);
 
 	/**
 	 * SelectionChanged Event Listener
+	 * 
 	 */
 
-	void selectionChanged(MethodRep rep);
+	void selectionChanged(ClassElement c, MethodDeclaration dec);
 
 	/**
-	 * Listener adapter that for each event does nothing.
+	 * Listener adapter that for each event
+	 * The original implementation does nothing.
 	 */
 	public class Adapter implements McGraphListener {
 
 		@Override
-		public void doubleClick(MethodRep rep) {
+		public void doubleClick(ClassElement c, MethodDeclaration dec) {
 			// TODO Auto-generated method stub
 
 		}
 
 		@Override
-		public void selectionChanged(MethodRep rep) {
+		public void selectionChanged(ClassElement c, MethodDeclaration dec) {
 			// TODO Auto-generated method stub
 
 		}

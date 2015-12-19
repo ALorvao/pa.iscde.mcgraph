@@ -29,7 +29,7 @@ public class PidescoTool implements pt.iscte.pidesco.extensibility.PidescoTool {
 		Display display = Display.getCurrent();
 		System.out.println(display.getShells().length);
 		Shell shell = new Shell(display);
-
+	
 		Table table = new Table(shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		table.addSelectionListener(new SelectionListener() {
 
@@ -61,8 +61,9 @@ public class PidescoTool implements pt.iscte.pidesco.extensibility.PidescoTool {
 			}
 			tableitems.put(item, name);
 		}
-		table.setSize(200, 200);
-		shell.setSize(200, 200);
+		table.setSize(200, 50*filters.size());
+		shell.setSize(200, 50*filters.size());
+		
 		shell.open();
 		shell.addDisposeListener(new DisposeListener() {
 

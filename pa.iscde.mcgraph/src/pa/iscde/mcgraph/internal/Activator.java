@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -16,6 +17,7 @@ import pa.iscde.mcgraph.service.McGraphServices;
 import pa.iscde.mcgraph.view.McGraphView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
+import pt.iscte.pidesco.projectbrowser.model.ClassElement;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 
 public class Activator implements BundleActivator {
@@ -75,15 +77,14 @@ public class Activator implements BundleActivator {
 		mcGraphListeners.remove(l);
 	}
 	
-	void notityDoubleClik(MethodRep rep) {
-		System.out.println("VOu notifica");
+	void notityDoubleClik(ClassElement c, MethodDeclaration dec) {
 		for(McGraphListener l : mcGraphListeners)
-			l.doubleClick(rep);
+			l.doubleClick(c, dec);
 	}
 
-	void notifySelectionChanged(MethodRep rep) {
+	void notifySelectionChanged(ClassElement c, MethodDeclaration dec) {
 		for(McGraphListener l : mcGraphListeners)
-			l.selectionChanged(rep);
+			l.selectionChanged(c, dec);
 	}
 	
 	
