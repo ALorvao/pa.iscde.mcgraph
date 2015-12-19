@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -50,10 +51,13 @@ public class McGraphView implements PidescoView {
 	private GraphViewer viewer;
 
 	private HashMap<String, McGraphFilter> filters;
+	private ArrayList<String> activated;
 
 	public McGraphView() {
 		this.instance = this;
 		mcGraph = new McGraph();
+		filters = mcGraph.getFilters();
+		activated = new ArrayList<>();
 	}
 
 	@Override
@@ -72,69 +76,6 @@ public class McGraphView implements PidescoView {
 		addSelectionChangedListener();
 		addEditorListeners();
 
-		filters = new HashMap<String, McGraphFilter>();
-		filters.put("NoFilter", new McGraphFilter() {
-
-			@Override
-			public boolean acceptDependencies(ClassElement c, MethodDeclaration md) {
-				return true;
-			}
-
-			@Override
-			public boolean accept(ClassElement c, MethodDeclaration md) {
-				return true;
-			}
-		});
-		IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.mcgraph.mcfilter");
-		IExtension[] extensions = extensionPoint.getExtensions();
-		for (IExtension e : extensions) {
-			IConfigurationElement[] confElements = e.getConfigurationElements();
-			for (IConfigurationElement c : confElements) {
-				String s = c.getAttribute("name");
-				System.out.println("Está ligado: " + s);
-				try {
-					Object o = c.createExecutableExtension("class");
-					McGraphFilter filter = (McGraphFilter) o;
-					filters.put(s, filter);
-				} catch (CoreException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		}
-
-
-	}
-
-	private void applyFilter(McGraphFilter filter) {
-		for (Object obj : viewer.getNodeElements()) {
-			if (obj instanceof MethodRep) {
-				MethodRep rep = (MethodRep) obj;
-				GraphItem graphItem = viewer.findGraphItem(rep);
-				graphItem.setVisible(false);
-				;
-			}
-		}
-		for (Object obj : viewer.getNodeElements()) {
-			if (obj instanceof MethodRep) {
-				MethodRep rep = (MethodRep) obj;
-				if (filter.accept(rep.getClassElement(), rep.getMethodDeclaration())) {
-					GraphItem graphItem = viewer.findGraphItem(rep);
-					System.out.println("Está visivel: " + rep);
-					graphItem.setVisible(true);
-					ArrayList<MethodRep> dependencies = rep.getDependencies();
-					for (MethodRep dep : dependencies) {
-						if (filter.acceptDependencies(dep.getClassElement(), dep.getMethodDeclaration())) {
-							GraphItem gi = viewer.findGraphItem(dep);
-							gi.setVisible(true);
-						}
-					}
-				}
-
-			}
-		}
-		viewer.applyLayout();
 	}
 
 	private void addEditorListeners() {
@@ -186,11 +127,6 @@ public class McGraphView implements PidescoView {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
 
-				if (viewer != null)
-					for (Object obj : viewer.getNodeElements()) {
-						GraphItem graphItem = viewer.findGraphItem(obj);
-						graphItem.setVisible(true);
-					}
 				ISelection selection = event.getSelection();
 				if (!selection.isEmpty()) {
 					viewer.setSelection(selection);
@@ -200,7 +136,6 @@ public class McGraphView implements PidescoView {
 						mcGraph.notifyDoubleClick(rep);
 					}
 				}
-				viewer.refresh();
 				viewer.applyLayout();
 
 			}
@@ -220,8 +155,6 @@ public class McGraphView implements PidescoView {
 						mcGraph.notifySelectionChanged(rep);
 					}
 				}
-				// unhighlightAll();
-
 			}
 		});
 	}
@@ -234,8 +167,8 @@ public class McGraphView implements PidescoView {
 			}
 	}
 
-	public List<MethodRep> getHighLighted() {
-		List<MethodRep> l = new ArrayList<MethodRep>();
+	public Map<MethodDeclaration, ClassElement> getHighLighted() {
+		Map<MethodDeclaration, ClassElement> l = new HashMap<MethodDeclaration, ClassElement>();
 		for (Object obj : viewer.getNodeElements()) {
 			if (obj instanceof MethodRep) {
 				MethodRep rep = (MethodRep) obj;
@@ -243,7 +176,7 @@ public class McGraphView implements PidescoView {
 				if (graphItem instanceof GraphNode) {
 					GraphNode node = (GraphNode) graphItem;
 					if (node.isSelected())
-						l.add(rep);
+						l.put(rep.getMethodDeclaration(), rep.getClassElement());
 				}
 			}
 		}
@@ -265,6 +198,84 @@ public class McGraphView implements PidescoView {
 
 	public static McGraphView getInstance() {
 		return instance;
+	}
+
+	public Set<String> getFilters() {
+		return filters.keySet();
+	}
+
+	public void resetFilters() {
+		activated.clear();
+		if (viewer != null)
+			for (Object obj : viewer.getNodeElements()) {
+				GraphItem graphItem = viewer.findGraphItem(obj);
+				graphItem.setVisible(true);
+			}
+	}
+
+	public void activateFilter(String filterID) {
+		activated.add(filterID);
+		applyFilters();
+	}
+
+	public void deactivateFilter(String filterID) {
+		activated.remove(filterID);
+		applyFilters();
+	}
+
+	private void applyFilters() {
+		for (Object obj : viewer.getNodeElements()) {
+			if (obj instanceof MethodRep) {
+				MethodRep rep = (MethodRep) obj;
+				if (!allFiltersAccepted(rep)) {
+					GraphItem graphItem = viewer.findGraphItem(rep);
+					graphItem.setVisible(false);
+				}
+				ArrayList<MethodRep> dependencies = rep.getDependencies();
+				for (MethodRep dep : dependencies) {
+					if (allFiltersAccepted(dep) && !hasDependencieAccepted(dep)) {
+						if (!isDependencieAccepted(dep)) {
+							GraphItem gi = viewer.findGraphItem(dep);
+							gi.setVisible(false);
+						}
+					}
+				}
+
+			}
+		}
+		viewer.applyLayout();
+	}
+
+	private boolean isDependencieAccepted(MethodRep dep) {
+		for (String s : activated) {
+			McGraphFilter filter = filters.get(s);
+			if (!filter.acceptDependencies(dep.getClassElement(), dep.getMethodDeclaration())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean hasDependencieAccepted(MethodRep rep) {
+		for (String s : activated) {
+			McGraphFilter filter = filters.get(s);
+			for (MethodRep dep : rep.getDependencies()) {
+				if (filter.acceptDependencies(dep.getClassElement(), dep.getMethodDeclaration())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean allFiltersAccepted(MethodRep rep) {
+		for (String s : activated) {
+			McGraphFilter filter = filters.get(s);
+			if (!filter.accept(rep.getClassElement(), rep.getMethodDeclaration())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

@@ -76,7 +76,7 @@ public class Activator implements BundleActivator {
 	}
 	
 	void notityDoubleClik(MethodRep rep) {
-		
+		System.out.println("VOu notifica");
 		for(McGraphListener l : mcGraphListeners)
 			l.doubleClick(rep);
 	}

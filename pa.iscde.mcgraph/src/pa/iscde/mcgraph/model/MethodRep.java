@@ -51,8 +51,6 @@ public class MethodRep {
 		for (int i = 0; i < parametros.size(); i++) {
 			if (parametros.get(i) instanceof SingleVariableDeclaration) {
 				SingleVariableDeclaration svd = (SingleVariableDeclaration) parametros.get(i);
-				System.out.println(svd);
-				System.out.println(svd.getType());
 				if (i != 0) {
 					method += ", ";
 				}

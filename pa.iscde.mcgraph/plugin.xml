@@ -17,7 +17,9 @@
          point="pt.iscte.pidesco.tool">
       <tool
             class="pa.iscde.mcgraph.internal.PidescoTool"
+            description="Filter"
             hasState="false"
+            icon="filter.png"
             view="pa.iscde.mcgraph.mcgraphview">
       </tool>
    </extension>

@@ -1,15 +1,26 @@
 package pa.iscde.mcgraph.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import pa.iscde.mcgraph.model.MethodRep;
+import pa.iscde.mcgraph.service.McGraphFilter;
 import pa.iscde.mcgraph.service.McGraphServices;
 import pa.iscde.mcgraph.view.McGraphView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
@@ -143,6 +154,58 @@ public class McGraph {
 
 	public void notifySelectionChanged(MethodRep rep) {
 		activator.notifySelectionChanged(rep);
+	}
+
+	public HashMap<String, McGraphFilter> getFilters() {
+
+		HashMap<String, McGraphFilter> filters = new HashMap<String, McGraphFilter>();
+		filters.put("NoFilter", new McGraphFilter() {
+
+			@Override
+			public boolean acceptDependencies(ClassElement c, MethodDeclaration md) {
+				return true;
+			}
+
+			@Override
+			public boolean accept(ClassElement c, MethodDeclaration md) {
+				return true;
+			}
+		});
+
+		for (MethodRep rep : metodos) {
+			filters.put(rep.getClassElement().getName().split("\\.")[0] + "DefaultFilter", new McGraphFilter() {
+
+				@Override
+				public boolean acceptDependencies(ClassElement c, MethodDeclaration md) {
+					return true;
+				}
+
+				@Override
+				public boolean accept(ClassElement c, MethodDeclaration md) {
+					return c.equals(rep.getClassElement());
+				}
+			});
+		}
+
+		IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.mcgraph.mcfilter");
+		IExtension[] extensions = extensionPoint.getExtensions();
+		for (IExtension e : extensions) {
+			IConfigurationElement[] confElements = e.getConfigurationElements();
+			for (IConfigurationElement c : confElements) {
+				String s = c.getAttribute("name");
+				System.out.println("Está ligado: " + s);
+				try {
+					Object o = c.createExecutableExtension("class");
+					McGraphFilter filter = (McGraphFilter) o;
+					filters.put(s, filter);
+				} catch (CoreException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+		return filters;
 	}
 
 }
