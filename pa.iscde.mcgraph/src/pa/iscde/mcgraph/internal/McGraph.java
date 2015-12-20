@@ -15,14 +15,10 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 import pa.iscde.mcgraph.model.MethodRep;
 import pa.iscde.mcgraph.service.McGraphFilter;
 import pa.iscde.mcgraph.service.McGraphServices;
-import pa.iscde.mcgraph.view.McGraphView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.model.ClassElement;
 import pt.iscte.pidesco.projectbrowser.model.PackageElement;
@@ -46,7 +42,7 @@ public class McGraph {
 		this.metodos = new ArrayList<>();
 		this.mcGraphServices = activator.getMcGraphService();
 		getContent();
-
+		
 	}
 
 	private void getContent() {

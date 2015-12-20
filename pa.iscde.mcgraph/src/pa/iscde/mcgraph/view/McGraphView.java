@@ -164,6 +164,7 @@ public class McGraphView implements PidescoView {
 		if (viewer != null)
 			for (Object obj : viewer.getNodeElements()) {
 				GraphItem graphItem = viewer.findGraphItem(obj);
+				if(graphItem!=null)
 				graphItem.unhighlight();
 			}
 	}
@@ -197,6 +198,7 @@ public class McGraphView implements PidescoView {
 		if (viewer != null)
 			for (Object obj : viewer.getNodeElements()) {
 				GraphItem graphItem = viewer.findGraphItem(obj);
+				if(graphItem!=null)
 				graphItem.setVisible(true);
 			}
 	}
@@ -284,6 +286,18 @@ public class McGraphView implements PidescoView {
 			}
 		}
 
+	}
+
+	public MethodRep getMethod(String text_Search) {
+		if(viewer!=null)
+		for (Object obj : viewer.getNodeElements()) {
+			if (obj instanceof MethodRep) {
+				MethodRep rep = (MethodRep) obj;
+				if (rep.toString().contains(text_Search))
+					return rep;
+			}
+		}
+		return null;
 	}
 
 }

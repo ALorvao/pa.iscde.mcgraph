@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -98,7 +100,7 @@ public class Activator implements BundleActivator {
 		return browserService;
 	}
 	
-	static BundleContext getContext() {
+	public static BundleContext getContext() {
 		return context;
 	}
 	
@@ -108,6 +110,10 @@ public class Activator implements BundleActivator {
 
 	public McGraphServices getMcGraphService() {
 		return services;
+	}
+	
+	public static Bundle getBundle(){
+		return Platform.getBundle("pa.iscde.mcgraph");
 	}
 
 	

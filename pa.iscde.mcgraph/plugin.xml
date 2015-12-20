@@ -12,8 +12,8 @@
       </view>
    </extension>
    <extension
-         id="id1"
-         name="name"
+         id="mcgraphfilter"
+         name="McGraphFilter"
          point="pt.iscte.pidesco.tool">
       <tool
             class="pa.iscde.mcgraph.internal.PidescoTool"
@@ -22,6 +22,14 @@
             icon="filter.png"
             view="pa.iscde.mcgraph.mcgraphview">
       </tool>
+   </extension>
+   <extension
+         id="McGraph"
+         point="pa.iscde.deepsearch.output_preview">
+      <item
+            class="pa.iscde.mcgraph.extension.McGraphOutPut_Preview"
+            name="McGraphOutput_Preview">
+      </item>
    </extension>
 
 </plugin>
