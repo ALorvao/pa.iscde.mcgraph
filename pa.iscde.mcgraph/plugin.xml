@@ -31,5 +31,15 @@
             name="McGraphOutput_Preview">
       </item>
    </extension>
+   <extension
+         id="mcgraphlayout"
+         name="McGraph Layout"
+         point="pt.iscte.pidesco.tool">
+      <tool
+            class="pa.iscde.mcgraph.internal.PidescoLayoutTool"
+            hasState="false"
+            view="pa.iscde.mcgraph.mcgraphview">
+      </tool>
+   </extension>
 
 </plugin>

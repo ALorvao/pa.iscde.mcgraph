@@ -20,11 +20,13 @@ import pa.iscde.mcgraph.view.McGraphView;
 public class McGraphOutPut_Preview implements OutputPreview {
 
 	MethodRep rep;
+	String text;
 
 	@Override
 	public void search(String text_Search, String text_SearchInCombo, String specificText_ComboSearchIn,
 			String text_AdvancedCombo, ArrayList<String> buttonsSelected_AdvancedCombo) {
 		rep = McGraphView.getInstance().getMethod(text_Search);
+		text = text_Search;
 		System.out.println(text_Search);
 	}
 
@@ -34,7 +36,7 @@ public class McGraphOutPut_Preview implements OutputPreview {
 		if (rep != null) {
 			System.out.println(rep);
 			McGraphOutPutPreviewItem item = new McGraphOutPutPreviewItem();
-			item.setItem("Dependencias", rep.toString(), rep.toString());
+			item.setItem("Dependencias", "", "");
 			URL fullPathString = FileLocator.find(Activator.getBundle(),
 					new Path("images/mcg.png"), null);
 			ImageDescriptor imageDesc = ImageDescriptor.createFromURL(fullPathString);
@@ -52,7 +54,7 @@ public class McGraphOutPut_Preview implements OutputPreview {
 		if (rep != null) {
 			for (MethodRep dep : rep.getDependencies()) {
 				McGraphOutPutPreviewItem item = new McGraphOutPutPreviewItem();
-				item.setItem(dep.toString(), rep.toString(), rep.toString());
+				item.setItem(dep.toString(), rep.toString(), text);
 				item.setSpecialData(dep);
 				l.add(item);
 			}
@@ -62,7 +64,10 @@ public class McGraphOutPut_Preview implements OutputPreview {
 
 	@Override
 	public void doubleClick(Item e) {
-		System.out.println(e);
+		if(e.getSpecialData() instanceof MethodRep){
+			MethodRep rep = (MethodRep) e.getSpecialData();
+			McGraphView.getInstance().highLight(rep.getClassElement(), rep.getMethodDeclaration());
+		}
 	}
 
 }
