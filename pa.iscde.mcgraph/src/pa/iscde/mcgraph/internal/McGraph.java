@@ -9,6 +9,9 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -18,6 +21,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import pa.iscde.mcgraph.model.MethodRep;
 import pa.iscde.mcgraph.service.McGraphFilter;
+import pa.iscde.mcgraph.service.McGraphLayout;
 import pa.iscde.mcgraph.service.McGraphServices;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.model.ClassElement;
@@ -33,6 +37,7 @@ public class McGraph {
 	private PackageElement root;
 	private ArrayList<MethodRep> metodos;
 	private McGraphServices mcGraphServices;
+	private HashMap<String, McGraphLayout> layouts;
 
 	public McGraph() {
 		this.activator = Activator.getActivator();
@@ -41,8 +46,10 @@ public class McGraph {
 		this.root = browserService.getRootPackage();
 		this.metodos = new ArrayList<>();
 		this.mcGraphServices = activator.getMcGraphService();
+		layouts = new HashMap<String, McGraphLayout>();
+		getLayouts();
 		getContent();
-		
+		startLayouts();
 	}
 
 	private void getContent() {
@@ -202,6 +209,54 @@ public class McGraph {
 			}
 		}
 		return filters;
+	}
+
+	public HashMap<String, McGraphLayout> getLayouts() {
+
+		return layouts;
+
+	}
+
+	public void startLayouts() {
+		for (MethodRep rep : metodos) {
+			layouts.put(rep.getClassElement().getName().split("\\.")[0], new McGraphLayout() {
+
+				@Override
+				public IFigure acceptFigure(ClassElement c, MethodDeclaration md) {
+					RectangleFigure r = new RectangleFigure();
+					if (rep.getClassElement().getName().split("\\.")[0].equals("Player")) {
+						r.setSize(50, 50);
+						r.setBackgroundColor(ColorConstants.red);
+						return r;
+					}
+					if (rep.getClassElement().getName().split("\\.")[0].equals("Script")) {
+						r.setSize(100, 100);
+						r.setBackgroundColor(ColorConstants.green);
+						return r;
+					}
+					return null;
+				}
+
+			});
+		}
+		IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.mcgraph.mclayout");
+		IExtension[] extensions = extensionPoint.getExtensions();
+		for (IExtension e : extensions) {
+			IConfigurationElement[] confElements = e.getConfigurationElements();
+			for (IConfigurationElement c : confElements) {
+				String s = c.getAttribute("name");
+				System.out.println("Layout | Está ligado: " + s);
+				try {
+					Object o = c.createExecutableExtension("class");
+					McGraphLayout layout = (McGraphLayout) o;
+					layouts.put(s, layout);
+				} catch (CoreException e1) {
+
+				}
+			}
+		}
+
 	}
 
 	public void setToolChecked(ArrayList<String> activated) {

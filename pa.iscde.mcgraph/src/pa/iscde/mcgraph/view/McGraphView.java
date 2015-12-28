@@ -57,7 +57,7 @@ public class McGraphView implements PidescoView {
 		viewer = new GraphViewer(viewArea, SWT.BORDER);
 		viewer.setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
 		viewer.setContentProvider(new ZestNodeContentProvider());
-		viewer.setLabelProvider(new ZestLabelProvider());
+		viewer.setLabelProvider(new ZestLabelProvider(mcGraph));
 		viewer.setInput(mcGraph.getMetodos());
 
 		LayoutAlgorithm layout = new HorizontalTreeLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING);
@@ -262,7 +262,6 @@ public class McGraphView implements PidescoView {
 		return true;
 	}
 
-	// Falta testar
 	public void highLight(ClassElement c, MethodDeclaration dec) {
 		for (Object obj : viewer.getNodeElements()) {
 			if (obj instanceof MethodRep) {
@@ -279,16 +278,17 @@ public class McGraphView implements PidescoView {
 
 	}
 
-	public MethodRep getMethod(String text_Search) {
+	public ArrayList<MethodRep> getMethod(String text_Search) {
+		ArrayList<MethodRep> methods = new ArrayList<>();
 		if(viewer!=null)
 		for (Object obj : viewer.getNodeElements()) {
 			if (obj instanceof MethodRep) {
 				MethodRep rep = (MethodRep) obj;
 				if (rep.toString().contains(text_Search))
-					return rep;
+					methods.add(rep);
 			}
 		}
-		return null;
+		return methods;
 	}
 	
 	public void applyLayout(int layout) {

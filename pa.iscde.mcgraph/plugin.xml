@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="mcfilter" name="McGraph Filter" schema="schema/mcfilter.exsd"/>
+   <extension-point id="mclayout" name="McGraph Layout" schema="schema/mclayout.exsd"/>
    <extension
          id="mcgraphview"
          name="MCGraph"
@@ -25,6 +26,7 @@
    </extension>
    <extension
          id="McGraph"
+         name="McGraphOutput_Preview"
          point="pa.iscde.deepsearch.output_preview">
       <item
             class="pa.iscde.mcgraph.extension.McGraphOutPut_Preview"
@@ -38,8 +40,14 @@
       <tool
             class="pa.iscde.mcgraph.internal.PidescoLayoutTool"
             hasState="false"
+            icon="layouticon.png"
             view="pa.iscde.mcgraph.mcgraphview">
       </tool>
+   </extension>
+   <extension
+         id="sort"
+         name="SpeedText SortList"
+         point="pa.iscde.speedtext.sortlist">
    </extension>
 
 </plugin>

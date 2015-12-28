@@ -19,30 +19,27 @@ import pa.iscde.mcgraph.view.McGraphView;
 
 public class McGraphOutPut_Preview implements OutputPreview {
 
-	MethodRep rep;
+	ArrayList<MethodRep> methods;
 	String text;
 
 	@Override
 	public void search(String text_Search, String text_SearchInCombo, String specificText_ComboSearchIn,
 			String text_AdvancedCombo, ArrayList<String> buttonsSelected_AdvancedCombo) {
-		rep = McGraphView.getInstance().getMethod(text_Search);
+		methods = McGraphView.getInstance().getMethod(text_Search);
 		text = text_Search;
-		System.out.println(text_Search);
 	}
 
 	@Override
 	public Collection<Item> getParents() {
 		LinkedList<Item> l = new LinkedList<>();
-		if (rep != null) {
-			System.out.println(rep);
+		if (methods != null) {
 			McGraphOutPutPreviewItem item = new McGraphOutPutPreviewItem();
 			item.setItem("Dependencias", "", "");
-			URL fullPathString = FileLocator.find(Activator.getBundle(),
-					new Path("images/mcg.png"), null);
+			URL fullPathString = FileLocator.find(Activator.getBundle(), new Path("images/mcg.png"), null);
 			ImageDescriptor imageDesc = ImageDescriptor.createFromURL(fullPathString);
 			Image image = imageDesc.createImage();
 			item.setImg(image);
-			item.setSpecialData(rep);
+			item.setSpecialData(methods);
 			l.add(item);
 		}
 		return l;
@@ -51,21 +48,23 @@ public class McGraphOutPut_Preview implements OutputPreview {
 	@Override
 	public Collection<Item> getChildren(String parent) {
 		LinkedList<Item> l = new LinkedList<>();
-		if (rep != null) {
-			for (MethodRep dep : rep.getDependencies()) {
-				McGraphOutPutPreviewItem item = new McGraphOutPutPreviewItem();
-				item.setItem(dep.toString(), rep.toString(), text);
-				item.setSpecialData(dep);
-				l.add(item);
-			}
+		if (methods != null) {
+			for (MethodRep rep : methods)
+				for (MethodRep dep : rep.getDependencies()) {
+					McGraphOutPutPreviewItem item = new McGraphOutPutPreviewItem();
+					item.setItem(dep.toString(), rep.toString(), text);
+					item.setSpecialData(dep);
+					l.add(item);
+				}
 		}
 		return l;
 	}
 
 	@Override
 	public void doubleClick(Item e) {
-		if(e.getSpecialData() instanceof MethodRep){
+		if (e.getSpecialData() instanceof MethodRep) {
 			MethodRep rep = (MethodRep) e.getSpecialData();
+			McGraphView.getInstance().unhighlightAll();
 			McGraphView.getInstance().highLight(rep.getClassElement(), rep.getMethodDeclaration());
 		}
 	}

@@ -14,21 +14,20 @@ import pt.iscte.pidesco.projectbrowser.model.ClassElement;
 
 public class McGraphServicesImpl implements McGraphServices {
 
-
 	public McGraphServicesImpl() {
-		
+
 	}
 
 	@Override
 	public Map<MethodDeclaration, ClassElement> getHighLighted() {
 		return McGraphView.getInstance().getHighLighted();
 	}
-	
+
 	@Override
-	public void highLight(ClassElement c, MethodDeclaration dec){
-		McGraphView.getInstance().highLight(c, dec);
+	public void highLight(ClassElement c, MethodDeclaration dec) {
+		if (c != null && dec != null)
+			McGraphView.getInstance().highLight(c, dec);
 	}
-	
 
 	@Override
 	public void addListener(McGraphListener listener) {
@@ -50,9 +49,5 @@ public class McGraphServicesImpl implements McGraphServices {
 	public void deactivateFilter(String filterId) {
 		McGraphView.getInstance().deactivateFilter(filterId);
 	}
-
-
-
-	
 
 }

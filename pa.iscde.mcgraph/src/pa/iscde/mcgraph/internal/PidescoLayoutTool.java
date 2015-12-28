@@ -14,11 +14,6 @@ import org.eclipse.swt.widgets.TableItem;
 import pa.iscde.mcgraph.view.McGraphView;
 
 public class PidescoLayoutTool implements pt.iscte.pidesco.extensibility.PidescoTool {
-
-	public PidescoLayoutTool() {
-
-	}
-
 	private static Map<TableItem, Integer> mapping = new HashMap<TableItem, Integer>();
 
 	@Override
@@ -53,7 +48,6 @@ public class PidescoLayoutTool implements pt.iscte.pidesco.extensibility.Pidesco
 	}
 
 	private void addItems(Table table) {
-		// TODO Auto-generated method stub
 		TableItem itemLayout0 = new TableItem(table, SWT.CHECK);
 		itemLayout0.setText("Tree Layout");
 		mapping.put(itemLayout0, 0);
@@ -66,6 +60,5 @@ public class PidescoLayoutTool implements pt.iscte.pidesco.extensibility.Pidesco
 		TableItem itemLayout3 = new TableItem(table, SWT.CHECK);
 		itemLayout3.setText("Grid Layout");
 		mapping.put(itemLayout3, 3);
-
 	}
 }
