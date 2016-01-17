@@ -54,7 +54,9 @@ public class McGraphView implements PidescoView {
 		this.instance = this;
 		mcGraph = new McGraph();
 		filters = mcGraph.getFilters();
+		layouts = mcGraph.getLayouts();
 		activated = new ArrayList<>();
+		activatedLayouts = new ArrayList<>();
 	}
 
 	@Override
