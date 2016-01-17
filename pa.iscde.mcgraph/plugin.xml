@@ -25,15 +25,6 @@
       </tool>
    </extension>
    <extension
-         id="McGraph"
-         name="McGraphOutput_Preview"
-         point="pa.iscde.deepsearch.output_preview">
-      <item
-            class="pa.iscde.mcgraph.extension.McGraphOutPut_Preview"
-            name="McGraphOutput_Preview">
-      </item>
-   </extension>
-   <extension
          id="mcgraphlayout"
          name="McGraph Layout"
          point="pt.iscte.pidesco.tool">

@@ -53,17 +53,17 @@ Filters Visible Methods
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  Sets the name of the Filter
                </documentation>
             </annotation>
          </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  Class that extends McGraphFilter
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java"/>
+                  <meta.attribute kind="java" basedOn=":pa.iscde.mcgraph.service.McGraphFilter"/>
                </appinfo>
             </annotation>
          </attribute>

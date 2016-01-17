@@ -53,4 +53,27 @@ public interface McGraphServices {
 	 */
 	public void deactivateFilter(String filterId);
 
+	/**
+	 * 
+	 * Return all Methods that contain the text
+	 * @param text_Search, not Null
+	 * @return
+	 */
+	public Map<MethodDeclaration, ClassElement> getMethodsWithText(String text_Search);
+
+
+	/**
+	 * 
+	 * UnhighLight all nodes
+	 * @return
+	 */
+	public void unhighlightAll();
+	
+	/**
+	 * 
+	 * Returns all Methods that depend of the given Method
+	 * @return
+	 */
+	public Map<MethodDeclaration, ClassElement> getDependencies(MethodDeclaration rep, ClassElement classElement);
+
 }

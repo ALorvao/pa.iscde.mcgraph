@@ -16,6 +16,5 @@ Require-Bundle: pt.iscte.pidesco;bundle-version="0.1.0",
  org.eclipse.zest.core;bundle-version="1.5.201",
  org.eclipse.zest.layouts;bundle-version="1.1.200",
  org.eclipse.jface;bundle-version="3.11.0",
- pa.iscde.deepsearch;bundle-version="0.0.1",
  pa.iscde.speedtext;bundle-version="0.0.1"
 Export-Package: pa.iscde.mcgraph.service

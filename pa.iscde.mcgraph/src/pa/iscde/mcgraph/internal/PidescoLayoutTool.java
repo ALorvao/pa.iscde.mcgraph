@@ -1,9 +1,12 @@
 package pa.iscde.mcgraph.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Display;
@@ -14,22 +17,31 @@ import org.eclipse.swt.widgets.TableItem;
 import pa.iscde.mcgraph.view.McGraphView;
 
 public class PidescoLayoutTool implements pt.iscte.pidesco.extensibility.PidescoTool {
-	private static Map<TableItem, Integer> mapping = new HashMap<TableItem, Integer>();
+
+	private HashMap<TableItem, String> tableitems;
+
+	public PidescoLayoutTool() {
+		// TODO Auto-generated constructor stub
+		tool = this;
+	}
 
 	@Override
 	public void run(boolean activate) {
 		McGraphView view = McGraphView.getInstance();
 		Display display = Display.getCurrent();
-		System.out.println("Layout: " + display.getShells().length);
+		tableitems = new HashMap<>();
+		Set<String> layouts = view.getLayouts();
 		Shell shell = new Shell(display);
 		Table table = new Table(shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		table.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				for (TableItem item : mapping.keySet()) {
+				view.resetLayouts();
+				for (TableItem item : tableitems.keySet()) {
 					if (item.getChecked()) {
-						view.applyLayout(mapping.get(item));
+						String layoutID = tableitems.get(item);
+						view.activateLayout(layoutID);
 					}
 				}
 			}
@@ -40,25 +52,37 @@ public class PidescoLayoutTool implements pt.iscte.pidesco.extensibility.Pidesco
 			}
 		});
 
-		addItems(table);
-		shell.setSize(200, 200);
-		table.setSize(200, 200);
+		shell.setSize(300, 50 * layouts.size());
+		table.setSize(300, 50 * layouts.size());
+		for (String name : layouts) {
+			TableItem item = new TableItem(table, SWT.CHECK);
+			item.setText(name);
+			tableitems.put(item, name);
+		}
 		shell.open();
+		shell.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				view.resetLayouts();
+			}
+		});
 
 	}
 
-	private void addItems(Table table) {
-		TableItem itemLayout0 = new TableItem(table, SWT.CHECK);
-		itemLayout0.setText("Tree Layout");
-		mapping.put(itemLayout0, 0);
-		TableItem itemLayout1 = new TableItem(table, SWT.CHECK);
-		itemLayout1.setText("Spring Layout");
-		mapping.put(itemLayout1, 1);
-		TableItem itemLayout2 = new TableItem(table, SWT.CHECK);
-		itemLayout2.setText("Radial Layout");
-		mapping.put(itemLayout2, 2);
-		TableItem itemLayout3 = new TableItem(table, SWT.CHECK);
-		itemLayout3.setText("Grid Layout");
-		mapping.put(itemLayout3, 3);
+	public void setChecked(ArrayList<String> activated) {
+		if (tableitems != null)
+			for (String s : activated) {
+				for (TableItem item : tableitems.keySet()) {
+					if (tableitems.get(item).equals(s)) {
+						item.setChecked(true);
+					}
+				}
+			}
 	}
+
+	private static PidescoLayoutTool tool;
+	protected static PidescoLayoutTool getInstance() {
+		return tool;
+	}
+
 }

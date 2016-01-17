@@ -9,15 +9,13 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.swt.graphics.Color;
 
 import pa.iscde.mcgraph.model.MethodRep;
 import pa.iscde.mcgraph.service.McGraphFilter;
@@ -222,19 +220,29 @@ public class McGraph {
 			layouts.put(rep.getClassElement().getName().split("\\.")[0], new McGraphLayout() {
 
 				@Override
-				public IFigure acceptFigure(ClassElement c, MethodDeclaration md) {
-					RectangleFigure r = new RectangleFigure();
-					if (rep.getClassElement().getName().split("\\.")[0].equals("Player")) {
-						r.setSize(50, 50);
-						r.setBackgroundColor(ColorConstants.red);
-						return r;
+				public boolean isChangeableNode(ClassElement c, MethodDeclaration md) {
+					// TODO Auto-generated method stub
+					return c.equals(rep.getClassElement());
+				}
+
+				@Override
+				public Color getBackgroundColor(ClassElement c, MethodDeclaration md) {
+					// TODO Auto-generated method stub
+					if (c.getName().equals("Main.java"))
+						return new Color(null, 100, 100, 100);
+					else {
+						return new Color(null, 200, 0, 200);
 					}
-					if (rep.getClassElement().getName().split("\\.")[0].equals("Script")) {
-						r.setSize(100, 100);
-						r.setBackgroundColor(ColorConstants.green);
-						return r;
+				}
+
+				@Override
+				public Color getForegroundColor(ClassElement classElement, MethodDeclaration methodDeclaration) {
+					// TODO Auto-generated method stub
+					if (classElement.getName().equals("Main.java"))
+						return new Color(null, 255, 255, 255);
+					else {
+						return new Color(null, 0, 0, 0);
 					}
-					return null;
 				}
 
 			});
@@ -246,7 +254,7 @@ public class McGraph {
 			IConfigurationElement[] confElements = e.getConfigurationElements();
 			for (IConfigurationElement c : confElements) {
 				String s = c.getAttribute("name");
-				System.out.println("Layout | Está ligado: " + s);
+				System.out.println("Está ligado: " + s);
 				try {
 					Object o = c.createExecutableExtension("class");
 					McGraphLayout layout = (McGraphLayout) o;
@@ -256,11 +264,15 @@ public class McGraph {
 				}
 			}
 		}
-
 	}
+	
 
 	public void setToolChecked(ArrayList<String> activated) {
 		PidescoTool.getInstance().setChecked(activated);
 	}
 
+
+	public void setLayoutToolChecked(ArrayList<String> activated) {
+		PidescoLayoutTool.getInstance().setChecked(activated);
+	}
 }

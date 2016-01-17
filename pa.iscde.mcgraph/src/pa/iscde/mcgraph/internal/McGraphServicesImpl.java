@@ -50,4 +50,19 @@ public class McGraphServicesImpl implements McGraphServices {
 		McGraphView.getInstance().deactivateFilter(filterId);
 	}
 
+	@Override
+	public Map<MethodDeclaration, ClassElement> getMethodsWithText(String text_Search) {
+		return McGraphView.getInstance().getMethodsWithText(text_Search);
+	}
+
+	@Override
+	public void unhighlightAll() {
+		McGraphView.getInstance().unhighlightAll();
+	}
+
+	@Override
+	public Map<MethodDeclaration, ClassElement> getDependencies(MethodDeclaration rep, ClassElement classElement) {
+		return McGraphView.getInstance().getDependencies(rep, classElement);
+	}
+
 }
